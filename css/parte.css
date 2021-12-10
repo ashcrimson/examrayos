@@ -1,0 +1,39 @@
+body {
+	
+background-color: #CFE6FF;
+	position: absolute; 
+	left: 10px; 
+	top: 24px; 
+	padding: 0px 0px 0px 0px;
+	font-family: Arial, sans-serif;
+  font-size: 11px;
+	border-left:1px solid #A7A6B8;
+	border-bottom:1px solid #A7A6B8;
+	border-top:1px solid #A7A6B8;
+	border-right:1px solid #A7A6B8;
+	
+}
+
+table{
+    box-shadow:1px 1px 5px black;
+     /* hack IE8 */
+    border-spacing: 0 \0/;
+    border-collapse: collapse \0/;
+    border-right: 2px inset #D3D3D3 \0/;
+    border-bottom: 2px inset #D3D3D3 \0/;
+    border-left: 2px inset #D3D3D3 \0/;
+    border-top: 2px inset #D3D3D3 \0/;
+  width: 150px;
+     /* hack IE7 */
+    *border-spacing: 0;
+    *border-collapse: collapse;
+    *border-right: 2px inset #D3D3D3;
+    *border-bottom: 2px inset #D3D3D3;
+}
+		tr {
+			background-color:#AEC7E1; /*AEC7E1*/
+			margin: 2px;
+			font-family: Arial;
+			font-size: 12px;
+		  font-weight: normal;
+		}

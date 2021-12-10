@@ -1,0 +1,188 @@
+ 
+
+
+
+#contenedor {
+    margin: 20px auto;
+    width: 850px;  /* Ancho del contenedor */
+box-sizing: border-box;
+-moz-box-sizing: border-box;
+
+
+
+}
+
+#contenedor input {
+height: 32px;
+visibility: hidden;
+}
+
+#contenedor label {
+float: left;
+cursor: pointer;
+font-size: 15px;  /* Tamaño del texto de las pestañas */
+line-height: 40px;
+height: 40px;
+padding: 0 20px;
+display: block;
+color: #888;  /* Color del texto de las pestañas */
+text-align: center;
+border-radius: 20px 5px 0 0;
+background: #eee;  /* Fondo de las pestañas */
+margin-right: 5px;
+   box-shadow: inset 1px 0px 1px  rgba(0, 0, 0, 0.45), 0px 2px 2px rgba(0, 0, 0, 0.25);
+}
+
+#contenedor input:hover + label {
+background: #ddd;  /* Fondo de las pestañas al pasar el cursor por encima */
+color: #666;  /* Color del texto de las pestañas al pasar el cursor por encima */
+}
+
+#contenedor input:checked + label {
+background: #cfe6Ff;  /* Fondo de las pestañas al presionar */
+color: #444; /* Color de las pestañas al presionar */
+z-index: 6;
+line-height: 45px;
+height: 45px;
+position: relative;
+top: -5px;
+-webkit-transition: .1s;
+-moz-transition: .1s;
+-o-transition: .1s;
+-ms-transition: .1s;
+}
+
+.conten {
+/*background: #FFDA91;  /* Fondo del contenido */
+background: #cfe6Ff;
+position: relative;
+width: 90%;
+height: 250px;  /* Alto del contenido */
+padding: 30px;
+z-index: 5;
+border-radius: 0 5px 5px 5px;
+   box-shadow: inset 1px -5px 1px rgba(0, 0, 0, 0.45), 0px 2px 2px rgba(0, 0, 0, 0.25);
+ 
+
+}
+
+
+
+.conten2 {
+/*background: #FFDA91;  /* Fondo del contenido */
+background: #cfe6Ff;
+position: relative;
+width: 90%;
+height: 200px;  /* Alto del contenido */
+padding: 30px;
+z-index: 5;
+border-radius: 0 5px 5px 5px;
+   box-shadow: inset 1px -5px 1px rgba(0, 0, 0, 0.45), 0px 2px 2px rgba(0, 0, 0, 0.25);
+ 
+
+}
+
+
+
+.relleno {
+/*background: #FFDA91;  /* Fondo del contenido */
+background: #ffffff;
+position: relative;
+
+padding: 1px;
+z-index: 0;
+border-radius: 0 0px 0px 0px;
+
+}
+
+.conten div {
+position: absolute;
+z-index: -100;
+opacity: 0;
+transition: all linear 0.1s;
+
+}
+
+.conten2 div {
+position: absolute;
+z-index: -100;
+opacity: 0;
+transition: all linear 0.1s;
+
+}
+
+
+
+
+
+#contenedor input.tab-selector-1:checked ~ .conten .content-1,
+#contenedor input.tab-selector-1:checked ~ .conten2 .content-1,
+#contenedor input.tab-selector-2:checked ~ .conten .content-2,
+#contenedor input.tab-selector-3:checked ~ .conten .content-3,
+#contenedor input.tab-selector-4:checked ~ .conten .content-4, 
+#contenedor input.tab-selector-5:checked ~ .conten .content-5{
+    z-index: 100;
+    opacity: 1;
+    -webkit-transition: all ease-out 0.2s 0.1s;
+-moz-transition: all ease-out 0.2s 0.1s;
+-o-transition: all ease-out 0.2s 0.1s;
+-ms-transition: all ease-out 0.2s 0.1s;
+}
+
+
+
+.scroll::-webkit-scrollbar-track {
+    background:#FBFBFB;
+    box-shadow: 3px 3px 10px rgba(0,0,0,.25) inset;
+}
+.scroll::-webkit-scrollbar-thumb {
+    background: #84C4FF;
+    border-radius: 10px;
+    border:1px solid rgba(0,0,0,0.3);
+    box-shadow: -3px -3px 6px rgba(66,137,224,1) inset,3px 3px 3px rgba(158,226,225,1) inset;
+}
+/*
+::-webkit-scrollbar 
+{
+    width: 12px;	
+}
+::-webkit-scrollbar-button
+{    	
+	
+	background: url(../imagenes/scroollarriba.png);
+	height: 23px;
+	 
+}
+::-webkit-scrollbar-button:hover
+{
+	background-color: #A4A4A4;	 
+}	 
+::-webkit-scrollbar-track 
+{
+    background-color: #D8D8D8;
+}
+ ::-webkit-scrollbar-track-piece 
+{
+	background-color: #D8D8D8;
+}	
+::-webkit-scrollbar-thumb 
+{		
+	background: #A4A4A4;
+	height: 50px;
+}
+::-webkit-scrollbar-thumb:hover 
+{		
+	background: #585858;	
+}*/
+
+
+tr.tfila2 {
+		  border-right:#ffffff;
+		
+			background-color:#CBE1F7; /*CBE1F7*/
+			margin: 2px;
+			font-family: Arial;
+			font-size: 12px;
+		  font-weight: normal;
+		}
+

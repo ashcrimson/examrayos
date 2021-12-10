@@ -1,0 +1,84 @@
+<?php
+
+$atenciones = array();
+require_once('../libs/nusoap/lib/nusoap.php');
+	include("../funciones.global.inc.php");
+	include("../funciones.inc.php");
+	verifica_sesion(false);
+	$db=genera_adodb();
+	$db_p=genera_adodb("portal");
+	
+	$valores=array();
+    
+	
+	   $sql= "select 
+	r.rut || '-'|| r.dv_rut as run,
+	r.nro_interconsulta, 
+	r.nombre,
+	to_char(r.fecha_propuesta,'dd/mm/YYYY') as fecha_propuesta, 
+	r.estado,
+	decode(r.estado,'D','Por Agendar','L','Enviado a Lista de Espera','A','Agendado') as desc_estado ,
+    (select e.desc_espec from especialidad e where trim(r.cod_espec)=trim(e.cod_espec)) as descespec,
+    r.fundamentos,
+    decode(tipo,'C','Si','I','No') as tipo,
+    r.usuario
+from interconsulta r
+";
+
+
+if(($_REQUEST["tipo_emb"]!="")&&($_REQUEST["tipo_emb"]!="undefined")){
+          $sql.=" where r.tipo_id=? and r.id=?";
+
+		  $valores[]=$_REQUEST["tipo_emb"];
+		  $valores[]=$_REQUEST["id_emb"];
+        }
+else{
+		  $sql.=" where 1=1";
+
+		  }		
+		
+
+	
+		if($_REQUEST["ftl_rut"] != ""){
+		  $sql.=" and to_char(r.rut) like '%'||?||'%'";
+		  $valores[]=$_REQUEST["ftl_rut"];
+		}
+		if($_REQUEST["ftl_fec_ini"] != ""){
+		  $sql.=" and to_char(r.fecha_creacion,'YYYYMMDD') >= to_char(to_date(?,'dd/mm/YYYY'),'YYYYMMDD')";
+		  $valores[]=$_REQUEST["ftl_fec_ini"];
+		}
+		if($_REQUEST["ftl_fec_fin"] != ""){
+		  $sql.=" and to_char(r.fecha_creacion,'YYYYMMDD') <= to_char(to_date(?,'dd/mm/YYYY'),'YYYYMMDD')";
+		  $valores[]=$_REQUEST["ftl_fec_fin"];
+		}
+		
+		if($_REQUEST["ftl_tipo"] != ""){
+		  $sql.=" and r.tipo_id =?";
+		  $valores[]=$_REQUEST["ftl_tipo"];
+		}
+		if($_REQUEST["ftl_estado"] != ""){
+		  $sql.=" and r.estado =?";
+		  $valores[]=$_REQUEST["ftl_estado"];
+		}
+	
+        $sql .=" order by r.fecha_creacion";
+		
+        $recordset = $db->Execute($sql,$valores);
+  if (!$recordset) die($sql.$db->ErrorMsg());  
+
+while ($arr = $recordset->FetchRow()) {
+		  
+     $arr["nombre_usuario"]=retorna_datos_portal($db_p,$arr["usuario"]);
+     $atenciones[]=$arr;
+  } 
+	
+       
+        $db->disconnect();  
+ $db_p->disconnect(); 
+
+$result = array();
+$result["records"] = count($atenciones);
+$result["rows"] = $atenciones;
+
+echo json_encode($result);
+?>

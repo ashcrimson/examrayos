@@ -1,0 +1,47 @@
+/* ------------- Menú de Navegación -------------------------- */
+#nav{
+		margin:0;
+		position:absolute;
+		top:0px;
+		right:0px;
+		left:50px;
+		width:600px;
+		/*margen con el div */
+	}
+#nav li{
+		color:#FFFF00; 
+		/*color base del texto*/
+		float:left;
+		width:145px;
+		margin:0;
+		padding:0;
+		list-style:none;
+		/*background:transparent;*/
+		font:11px Verdana,Tahoma,Helvetica,Sans-serif;
+		text-align:center;
+		position:relative;
+		cursor:default;
+	}
+#nav li ul{
+		padding-top:0px;
+		margin:0;
+	}
+#nav a{text-decoration:none;}
+#nav li a{ color: #FFFF00; font-weight: bold;}
+#nav li a:hover{text-decoration:underline;}
+#nav li li a:hover{text-decoration:none;}
+#nav li li a { 
+		border-color: #9F5933; 
+		border-style:solid; 
+		border-width:0px 2px 1px 2px; 
+		display:block;	
+		color:#400000; 
+		font-weight: bold;
+		background:#ffffff; 
+		line-height:14px;
+}
+#nav li li a:hover{color:#000000;background:#FFFFFF;/* Transparencia en Otros navegadores */}
+li ul{padding:0.5em 0 1em 0;display:none;position:absolute;top:100%;left:0;}
+li>ul{top:auto;left:auto;}
+li li{float:left;border:0;display:block;background:transparent;}
+li:hover ul,li.over ul{display:block;}

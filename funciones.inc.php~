@@ -1,0 +1,381 @@
+<?php
+function resultado_minsal($db,$nro_orden,$resultado) {
+  $usr="lab_priv_navalviña";
+  $pass="hnv2020";
+  $access_key=ACCESS_KEY;
+  $cod_deis_hospital="107217";
+  $url_final=URL_BASE."entregaResultado";
+  $sql="select
+r.id_minsal
+from registro r
+where r.nro_orden =?";
+  $valores=array();
+  $valores[]=$nro_orden; 
+  $recordset = $db->Execute($sql,$valores);
+  if (!$recordset) die("hhh".$db->ErrorMsg());  
+  $datos=array();  
+  while ($arr = $recordset->FetchRow()) {
+     
+     $datos=$arr;
+  }
+  
+  $input=array();
+  $input["id_muestra"]=$datos["id_minsal"];
+  $input["resultado"]=$resultado;
+  /*
+  $ch = curl_init();
+  curl_setopt($ch, CURLOPT_PROXY, PROXY);
+  curl_setopt($ch, CURLOPT_URL,$url_final);
+  curl_setopt($ch, CURLOPT_POST,1);
+  curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode(array($input)));
+  curl_setopt($ch, CURLOPT_RETURNTRANSFER,1);
+  curl_setopt($ch, CURLOPT_VERBOSE,1);
+  curl_setopt($ch, CURLOPT_STDERR,$f);
+  curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+                                                   'Content-Type: application/json',
+												   'Content-Type: multipart/form-data',
+                                                   'ACCESSKEY:'.$access_key
+
+                                                   ));
+  $res=json_decode(curl_exec ($ch),true);
+  $info = curl_getinfo($ch);
+  //print_r($info);
+  print_r($res);
+  exit(0);
+  */
+  print("curl -X POST \"".$url_final."\" -H \"accept: application/json\" -H \"ACCESSKEY: ".$access_key."\" -H \"Content-Type: multipart/form-data\" -F 'parametros={ \"id_muestra\": ". $input["id_muestra"].", \"resultado\": \"".$input["resultado"]."\"}'\n");
+  $cmd=shell_exec("curl -X POST \"".$url_final."\" -H \"accept: application/json\" -H \"ACCESSKEY: ".$access_key."\" -H \"Content-Type: multipart/form-data\" -F 'parametros={ \"id_muestra\": ". $input["id_muestra"].", \"resultado\": \"".$input["resultado"]."\"}'");
+  $salida=array();
+  $res=json_decode($cmd,true); 
+  
+  /* if(curl_errno($ch)){
+	$salida["res"] =0;
+	$salida["error"] =curl_error($ch);
+  }
+  else
+  */
+  if(!is_array($res)){
+	$salida["res"] =0;
+	$salida["error"] ="Error de comunicacion con Servidor Minsal";
+  }
+  elseif($res["error"] != ""){
+	$salida["res"] =0;
+	$salida["error"] =$res["error"];
+	
+  }
+  else{
+	$salida["res"] =1;
+	$salida["mensaje"] =$res[0]["MENSAJE"];
+  }
+  curl_close ($ch);
+  return $salida;
+}
+function recepcion_minsal($db,$nro_orden) {
+  $usr="lab_priv_navalviña";
+  $pass="hnv2020";
+  $access_key=ACCESS_KEY;
+  $cod_deis_hospital="107217";
+  $url_final=URL_BASE."/recepcionarMuestra";
+  $sql="select
+r.id_minsal
+from registro r
+where r.nro_orden =?";
+  $valores=array();
+  $valores[]=$nro_orden; 
+  $recordset = $db->Execute($sql,$valores);
+  if (!$recordset) die("hhh".$db->ErrorMsg());  
+  $datos=array();  
+  while ($arr = $recordset->FetchRow()) {
+     
+     $datos=$arr;
+  }
+  
+  $input=array();
+  $input["id_muestra"]=$datos["id_minsal"];
+  $ch = curl_init();
+  curl_setopt($ch, CURLOPT_PROXY, PROXY);
+  curl_setopt($ch, CURLOPT_URL,$url_final);
+  curl_setopt($ch, CURLOPT_POST,1);
+  curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode(array($input)));
+  curl_setopt($ch, CURLOPT_RETURNTRANSFER,1);
+  curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+                                                   'Content-Type: application/json',
+                                                   'ACCESSKEY:'.$access_key
+
+                                                   ));
+  $res=json_decode(curl_exec ($ch),true);
+ 
+  $salida=array();
+
+  
+   if(curl_errno($ch)){
+	$salida["res"] =0;
+	$salida["error"] =curl_error($ch);
+  }
+  elseif(!is_array($res)){
+	$salida["res"] =0;
+	$salida["error"] ="Error de comunicacion con Servidor Minsal";
+  }
+  elseif($res["error"] != ""){
+	$salida["res"] =0;
+	$salida["error"] =$res["error"];
+	
+  }
+  else{
+	$salida["res"] =1;
+	$salida["id_muestra"] =$res[0]["id_muestra"];
+  }
+  curl_close ($ch);
+  return $salida;
+}
+function envio_minsal($db,$nro_orden) {
+  $usr="lab_priv_navalviña";
+  $pass="hnv2020";
+  $access_key=ACCESS_KEY;
+  $cod_deis_hospital="107217";
+  $url_final=URL_BASE."/crearMuestras";
+  $sql="select
+r.rut||'-'||r.dv_rut as codigo_muestra_cliente,
+r.rut_responsable||'-'||r.dv_rut_responsable as rut_responsable,
+r.rut_medico||'-'||r.dv_rut_medico as rut_medico,
+r.rut as paciente_run,
+r.dv_rut as paciente_dv,
+r.nombres as paciente_nombres,
+r.ap_pat as paciente_ap_pat,
+r.ap_mat as paciente_ap_mat,
+to_char(r.fecha_nac,'dd-mm-yyyy') as paciente_fecha_nac,
+r.comuna as paciente_comuna,
+r.direccion as paciente_direccion,
+r.telefono as paciente_telefono,
+r.tipodoc as paciente_tipodoc,
+r.sexo as paciente_sexo,
+(select x.desc_prevision from prevision x where x.cod_prevision=r.prevision) as paciente_prevision,
+to_char(r.fecha_muestra,'dd-mm-yyyy') fecha_muestra,
+(select x.desc_tecnica_muestra from tecnica_muestra x where x.cod_tecnica_muestra=r.tecnica_muestra) as tecnica_muestra,
+(select x.desc_tipo_muestra from tipo_muestra x where x.cod_tipo_muestra=r.tipo_muestra) as tipo_muestra
+from registro r
+where r.nro_orden =?";
+  $valores=array();
+  $valores[]=$nro_orden; 
+  $recordset = $db->Execute($sql,$valores);
+  if (!$recordset) die("hhh".$db->ErrorMsg());  
+  $datos=array();  
+  while ($arr = $recordset->FetchRow()) {
+      foreach($arr as $k => $v){
+	if(($k == "tecnica_muestra")||($k == "tipo_muestra"))	
+    $arr[$k]=utf8_decode($v);
+	else
+	$arr[$k]=utf8_encode($v);
+	
+	  }
+     $datos=$arr;
+  }
+  
+  $input=array();
+  $input["codigo_muestra_cliente"]=$datos["codigo_muestra_cliente"];
+  $input["id_laboratorio"]=$cod_deis_hospital;
+  $input["rut_responsable"]= $datos["rut_responsable"];
+  $input["cod_deis"]=$cod_deis_hospital;
+  $input["rut_medico"]=$datos["rut_medico"];
+  $input["paciente_run"]=$datos["paciente_run"];
+  $input["paciente_dv"]=$datos["paciente_dv"];
+  $input["paciente_nombres"]=$datos["paciente_nombres"];
+  $input["paciente_ap_pat"]=$datos["paciente_ap_pat"];
+  $input["paciente_ap_mat"]=$datos["paciente_ap_mat"];
+  $input["paciente_fecha_nac"]=$datos["paciente_fecha_nac"];
+  $input["paciente_comuna"]=$datos["paciente_comuna"];
+  $input["paciente_direccion"]=$datos["paciente_direccion"];
+  $input["paciente_telefono"]=$datos["paciente_telefono"];
+  $input["paciente_tipodoc"]=$datos["paciente_tipodoc"];
+  $input["paciente_sexo"]=$datos["paciente_sexo"];
+  $input["paciente_prevision"]=$datos["paciente_prevision"];
+  $input["fecha_muestra"]=$datos["fecha_muestra"];
+  $input["tecnica_muestra"]=$datos["tecnica_muestra"];
+  $input["tipo_muestra"]=$datos["tipo_muestra"];
+  $ch = curl_init();
+  curl_setopt($ch, CURLOPT_PROXY, PROXY);
+  curl_setopt($ch, CURLOPT_URL,$url_final);
+  curl_setopt($ch, CURLOPT_POST,1);
+  curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode(array($input)));
+  curl_setopt($ch, CURLOPT_RETURNTRANSFER,1);
+  curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+                                                   'Content-Type: application/json',
+                                                   'ACCESSKEY:'.$access_key
+
+                                                   ));
+  $res=json_decode(curl_exec ($ch),true);
+  $salida=array();
+
+  
+   if(curl_errno($ch)){
+	$salida["res"] =0;
+	$salida["error"] =curl_error($ch);
+  }
+  elseif(!is_array($res)){
+	$salida["res"] =0;
+	$salida["error"] ="Error de comunicacion con Servidor Minsal";
+  }
+  elseif($res["error"] != ""){
+	$salida["res"] =0;
+	$salida["error"] =$res["error"];
+	
+  }
+  else{
+	$salida["res"] =1;
+	$salida["id_muestra"] =$res[0]["id_muestra"];
+  }
+  curl_close ($ch);
+  return $salida;
+}  
+function existe_registro($db,$nro_orden) {
+  $sql="select count(*) as cuenta   
+from registro 
+where nro_orden=? ";
+  $valores=array();
+  $valores[]=$nro_orden; 
+  $recordset = $db->Execute($sql,$valores);
+  if (!$recordset) die("hhh".$db->ErrorMsg());  
+  $cuenta=0;  
+  while ($arr = $recordset->FetchRow()) {
+
+     $cuenta=$arr["cuenta"];
+  }
+  
+  
+ 
+    return $cuenta;
+}
+function retorna_datos_registro($db,$run) {
+  $sql="select 
+	
+	NOMBRES, 
+	AP_PAT, 
+	AP_MAT ,
+	to_char(FECHA_NAC,'dd/mm/YYYY') as FECHA_NAC, 
+	COMUNA ,
+	DIRECCION, 
+	TELEFONO ,
+	SEXO, 
+	PREVISION 
+	 
+from registro 
+where rut=? order by fecha_muestra asc";
+  $valores=array();
+  $valores[]=$run; 
+  $recordset = $db->Execute($sql,$valores);
+  if (!$recordset) die("hhh".$db->ErrorMsg());  
+  $res=array();  
+  while ($arr = $recordset->FetchRow()) {
+
+     $res=$arr;
+  }
+  
+  
+ 
+    return $res;
+}
+
+function retorna_tablas($db,$tipo,$pdf=null){
+  if ($tipo ==1)
+     $sql="select cod_servicio cod,desc_servicio descrip from servicio  ";
+  elseif($tipo ==2)
+     $sql="select tipo_usuario cod,desc_tipo_usuario descrip from tipo_usuario  ";
+
+  $recordset = $db->Execute($sql);
+  if (!$recordset) die(" retorna_datos_egreso_clinico $id".$db->ErrorMsg());
+  $res=array();
+  while ($arr = $recordset->FetchRow()) {
+    if($pdf !=null)
+      $res[$arr["cod"]]=$arr["descrip"];
+    else
+      $res[]=$arr;
+  }
+  
+   
+  
+  return $res;
+}
+function retorna_datos_medico($db,$email){
+
+  $sql="select nombres,apellido_paterno,apellido_materno,email,tipo_usuario
+ from usuario where email=? ";
+  $recordset = $db->Execute($sql,array($email));
+  if (!$recordset) die(" retorna_datos_egreso_clinico $sql".$db->ErrorMsg());
+  $res=array();
+  while ($arr = $recordset->FetchRow()) {
+    $res[]=$arr;
+  }
+  return $res;
+}
+
+function retorna_datos_medico2($db,$email){
+
+  $sql="select nombres,apellido_paterno,apellido_materno,email,tipo_usuario
+ from usuario where email=? ";
+  $recordset = $db->Execute($sql,array($email));
+  if (!$recordset) die(" retorna_datos_egreso_clinico $sql".$db->ErrorMsg());
+  $res=array();
+  while ($arr = $recordset->FetchRow()) {
+    $res[]=$arr;
+  }
+  return $res;
+}
+
+function retorna_interconsulta($db, $nro_interconsulta) {
+
+  $res=array();
+  $valores=array();
+  $valores[]=$nro_interconsulta;
+  $recordset = $db->Execute("select * from interconsulta where nro_interconsulta=? ",$valores);
+  if (!$recordset) die($db->ErrorMsg());
+
+
+  while ($arr = $recordset->FetchRow()) {
+    foreach($arr as $c => $v)
+      $arreglo[$c]=utf8_encode($v);
+    $res[]=$arreglo;
+  }
+  return $res;
+}
+
+
+
+function retorna_interconsulta2($db, $nro_interconsulta) {
+
+  $res=array();
+  $valores=array();
+  $valores[]=$nro_interconsulta;
+  $recordset = $db->Execute("select * from interconsulta where nro_interconsulta=? ",$valores);
+  if (!$recordset) die($db->ErrorMsg());
+
+
+  while ($arr = $recordset->FetchRow()) {
+    foreach($arr as $c => $v)
+      $arreglo[$c]=utf8_encode($v);
+    $res[]=$arreglo;
+  }
+  return $res;
+}
+
+
+
+
+function retorna_examenes($db,$nro_interconsulta){
+  
+
+$sql="select examenes_pedidos.cod_examen cod, examenes.examen exa
+from examenes_pedidos  
+inner join examenes on examenes_pedidos.cod_examen= examenes.cod_examen
+where nro_interconsulta = $nro_interconsulta order by 2 asc";
+$recordset = $db->Execute($sql);
+  if (!$recordset) die(" retorna_datos_egreso_clinico $id".$db->ErrorMsg());
+  $res=array();
+  while ($arr = $recordset->FetchRow()) {
+    if($pdf !=null)
+      $res[$arr["cod"]]=$arr["exa"];
+    else
+      $res[]=$arr;
+  }
+   return $res;
+}
+?>

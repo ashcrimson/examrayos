@@ -1,0 +1,75 @@
+<?php
+define("URL_BASE","https://tomademuestras.api.openagora.org/");
+$usr="lab_priv_navalviña";
+$usr_tomador="13333648";
+$registro_tomador="287910";
+$rut_responsable="13333648-6";
+$pass="hnv2020";
+$url_base=URL_BASE;
+$access_key="AK026-89FR-000QE7ADJ-000000YEJ5W6";
+$cod_deis_hospital="107217";
+/*
+$url_final=$url_base."/datosMuestraRUT";
+
+$input=array();
+$input["rut_paciente"]="13190968-3";
+$ch = curl_init();
+curl_setopt($ch, CURLOPT_URL,$url_final);
+curl_setopt($ch, CURLOPT_POST,1);
+curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode(array($input)));
+curl_setopt($ch, CURLOPT_RETURNTRANSFER,1);
+curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+					   'Content-Type: application/json',
+                                                   'ACCESSKEY:'.$access_key
+
+					   ));
+$res=json_decode(curl_exec ($ch),true);
+curl_close ($ch);
+print_r($res);
+
+*/
+try {
+     $url_final=$url_base."/crearMuestras";
+     $input=array();
+     $input["codigo_muestra_cliente"]="0306824-9";
+     $input["id_laboratorio"]=$cod_deis_hospital;
+     $input["rut_responsable"]= $rut_responsable;
+     $input["cod_deis"]=$cod_deis_hospital;
+     $input["rut_medico"]="6206577-K";
+     $input["paciente_run"]=13190968;
+     $input["paciente_dv"]="3";
+     $input["paciente_nombres"]="RAUL ALFONSO";
+     $input["paciente_ap_pat"]="RONDINI";
+     $input["paciente_ap_mat"]="NAVARRO";
+     $input["paciente_fecha_nac"]="03-03-1977";
+     $input["paciente_comuna"]="5101";
+     $input["paciente_direccion"]="Av Matta 473 Cerro Los Placeres";
+     $input["paciente_telefono"]="123456789";
+     $input["paciente_tipodoc"]="RUN";
+     $input["paciente_sexo"]="M";
+     $input["paciente_prevision"]="ISAPRE";
+     $input["fecha_muestra"]=date('d-m-Y');
+     $input["tecnica_muestra"]="RT-PCR";
+     $input["tipo_muestra"]="Lavado Broncoalveolar";
+     //print(json_encode($input));
+     //exit(0);
+     $ch = curl_init();
+     curl_setopt($ch, CURLOPT_URL,$url_final);
+     curl_setopt($ch, CURLOPT_POST,1);
+     curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode(array($input)));
+     curl_setopt($ch, CURLOPT_RETURNTRANSFER,1);
+     curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+                                                   'Content-Type: application/json',
+                                                   'ACCESSKEY:'.$access_key
+
+                                                   ));
+     //$res=curl_exec ($ch);
+     $res=json_decode(curl_exec ($ch),true);
+     curl_close ($ch);
+}
+catch(Exception $e){
+  throw new Exception("Invalid URL",0,$e);
+}
+     print_r($res);
+
+?>
